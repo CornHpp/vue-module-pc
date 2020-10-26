@@ -1,11 +1,15 @@
 //webpack的公用配置
 const path = require('path')
 //每次重新打包后，清楚dist的目录
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 //生成一个html的模板的插件 
 const htmlWebpackPlugin = require('html-webpack-plugin');
 //解析vue文件的必须要的loader
-const {VueLoaderPlugin}  = require('vue-loader')
+const VueLoaderPlugin  = require('vue-loader/lib/plugin')
+//压缩css的文件用的，
+const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin')
+//抽离css文件
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 module.exports={
     //打包入口
     entry:{
@@ -20,11 +24,11 @@ module.exports={
     module:{
         rules:[
             {
-                test:'/\.css/$',  //解析.css文件
-                use:["style-loader","css-loader"]
+                test:/\.css$/,  //解析.css文件
+                use:[MiniCssExtractPlugin.loader,"style-loader","css-loader"]
             },
             {
-                test:'/\.vue/$',   //解析.vue文件
+                test:/\.vue$/,   //解析.vue文件
                 use:['vue-loader']
             },
             {
@@ -40,7 +44,7 @@ module.exports={
                 }]
             },
             {
-                test:'/\.js/$',
+                test:/\.js$/,
                 use:[
                     {
                         loader:'bebal-loader',
@@ -56,13 +60,15 @@ module.exports={
         ]
     },
     //公用plugins
-    pulgins:[
-        new CleanWebpackPlugin(),
+    plugins:[
+        new OptimizeCssAssetsWebpackPlugin(),  //压缩css文件
+        new CleanWebpackPlugin(),  //每次打包的时候，删除上一次的dist文件
         new htmlWebpackPlugin({
             template:'../src/public/index.html', //声明html文件的模板
             filename:'index.html'
         }),
-        new VueLoaderPlugin()
+        new VueLoaderPlugin(),//vue的plugin
+        new MiniCssExtractPlugin()  //从js的代码中分离css代码出来
     ],
 
     resolve:{
@@ -70,7 +76,11 @@ module.exports={
             vue$:"vue/dist/vue.esm.js",  //必须要写，用来解析vue文件的
             "@":'src'
         }
+    },
+    devtool:"cheap-inline-source-map", //打开可以让我知道，我们哪个地方代码写错了
+    devServer:{  //配置 webpack的服务器webpack-dev-server功能
+        contentBase:'./dist',  //打开是哪个文件夹下的index.html
+        open:true,  //设置是否自动打开浏览器
+        hot:true,  //设置热更新
     }
-    
-
 }

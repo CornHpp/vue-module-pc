@@ -1,12 +1,16 @@
-/*
- * @Author: your name
- * @Date: 2020-10-21 22:44:44
- * @LastEditTime: 2020-10-22 21:57:00
- * @LastEditors: your name
- * @Description: In User Settings Edit
- * @FilePath: \vue-module-pc\webpack\webpack.dev.js
- */
+
 const {merge} = require('webpack-merge');
 const path= require('path')
-
-module.exports=merge()
+const common = require('./webpack.common.js')
+const webpack  = require('webpack')
+module.exports=merge(common,{
+    mode:'development',  //生产环境
+    devServer:{  //开启本地服务器
+        contentBase:'./dist',
+        hot:true
+    },
+    plugins:[
+        new webpack.NamedChunksPlugin(),  //给打包的模块，命名的
+        new webpack.HotModuleReplacementPlugin() //启动热更新 
+    ] 
+})
