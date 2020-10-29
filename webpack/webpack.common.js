@@ -13,7 +13,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 module.exports={
     //打包入口
     entry:{
-        main:'../src/main.js'
+        main:'./src/main.js'
     },
     //打包出口
     output:{
@@ -25,7 +25,7 @@ module.exports={
         rules:[
             {
                 test:/\.css$/,  //解析.css文件
-                use:[MiniCssExtractPlugin.loader,"style-loader","css-loader"]
+                use:[MiniCssExtractPlugin.loader,"css-loader","postcss-loader"]
             },
             {
                 test:/\.vue$/,   //解析.vue文件
@@ -64,7 +64,7 @@ module.exports={
         new OptimizeCssAssetsWebpackPlugin(),  //压缩css文件
         new CleanWebpackPlugin(),  //每次打包的时候，删除上一次的dist文件
         new htmlWebpackPlugin({
-            template:'../src/public/index.html', //声明html文件的模板
+            template:'public/index.html', //声明html文件的模板
             filename:'index.html'
         }),
         new VueLoaderPlugin(),//vue的plugin
@@ -80,7 +80,7 @@ module.exports={
     devtool:"cheap-inline-source-map", //打开可以让我知道，我们哪个地方代码写错了
     devServer:{  //配置 webpack的服务器webpack-dev-server功能
         contentBase:'./dist',  //打开是哪个文件夹下的index.html
-        open:true,  //设置是否自动打开浏览器
+        open:false,  //设置是否自动打开浏览器
         hot:true,  //设置热更新
     }
 }
