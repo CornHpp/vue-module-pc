@@ -10,6 +10,11 @@ const VueLoaderPlugin  = require('vue-loader/lib/plugin')
 const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin')
 //抽离css文件
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+
+// ----------------------------------------------------------------------------------分割线
+// 下面plguins可选项的
+
+
 module.exports={
     //打包入口
     entry:{
@@ -47,11 +52,13 @@ module.exports={
                 test:/\.js$/,
                 use:[
                     {
-                        loader:'bebal-loader',
+                        loader:'babel-loader',
                         options:{
-                            presets:['env']
+                             // 开启babel缓存
+                            // 第二次构建时，会读取之前的缓存
+                            cacheDirectory: true
                         }
-                    },
+                    }
                 ],
                 include:[   //只解析src下面的js文件，减少打node_modules
                     path.resolve(__dirname,'src')
@@ -68,7 +75,10 @@ module.exports={
             filename:'index.html'
         }),
         new VueLoaderPlugin(),//vue的plugin
-        new MiniCssExtractPlugin()  //从js的代码中分离css代码出来
+        new MiniCssExtractPlugin(),  //从js的代码中分离css代码出来
+        
+        // --------------------我是分割线（可选的)
+     
     ],
 
     resolve:{
