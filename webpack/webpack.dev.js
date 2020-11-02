@@ -17,13 +17,14 @@ module.exports=merge(common,{
     },
 
     devServer:{  //开启本地服务器
-        contentBase:'./dist',
+        contentBase:'./public',  //从哪个地方开启服务
+        publicPath:'./',
         compress:true,  //开启gzip压缩功能
         hot:true,
-        open:true,
+        open:false,
         proxy:{
           //开启跨域，将本地的/api代理到3000端口号
-          '/api':'http://localhost:3000'
+          // '/api':'http://localhost:3000'
         }
     },
     module:{

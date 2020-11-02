@@ -18,6 +18,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 //DllReferencePlugin这个主要是将生成的vendor.dll.js文件加上hash值插入到页面中。
 const DllReferencePlugin = require('webpack/lib/DllReferencePlugin')
 
+
 module.exports={
     //打包入口
     entry:{
@@ -85,7 +86,7 @@ module.exports={
 
           ////这个主要是将Dllplugin生成的vendor.dll.js文件加上hash值插入到页面中。
           new DllReferencePlugin({
-            manifest:require(path.join(__dirname,'../static/js/vendor-manifest.json'))
+            manifest: require('./dll/vendor-manifest.json')
           }),
 
           //自动忽略哪个包，和上面的noParse类似的功能。
@@ -100,7 +101,7 @@ module.exports={
     devtool:"cheap-inline-source-map", //打开可以让我知道，我们哪个地方代码写错了
 
     devServer:{  //配置 webpack的服务器webpack-dev-server功能
-        contentBase:'./dist',  //打开是哪个文件夹下的index.html
+        
 
     },
 
