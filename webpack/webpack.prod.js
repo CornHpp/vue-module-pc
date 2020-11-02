@@ -2,11 +2,23 @@ const {merge} = require('webpack-merge');
 const path= require('path')
 const common = require('./webpack.common.js')
 const webpack  = require('webpack')
+
 // 压缩js
 const TerserPlugin = require('terser-webpack-plugin');
 
+//开启Scope Hosting 作用：把所有的函数放到一个作用域里面，在上线模式使用
+const ModuleConcatenationPlugin = require('webpack/lib/optimize/ModuleConcatenationPlugin')
+
 module.exports=merge(common,{
     mode:'production',
+
+
+     //显示原始源代码，使用这个，才能开启多线程压缩
+     devtool:'source-map',
+
+
+
+     //optimization是webpack4新增的，专门用来分割代码用的。
     optimization:{  //设置chunks  代码分割
         splitChunks:{ 
             chunks:'all',  //设置为all代表分离公共代码和第三方代码，
@@ -28,17 +40,21 @@ module.exports=merge(common,{
                     minChunks:2 //公共模块最少复用过几次
                 }
             },
-          
+           
         },
-      
-        // 压缩js  //基本配置https://github.com/webpack-contrib/terser-webpack-plugin
+        
+   
+        // 压缩js  uglifyJs是专门用来多线程压缩js代码用的，
+        minimize: true,
         minimizer: [
-            // new TerserPlugin({
-            // // parallel: true,  //启动多进程打包
-            // // parallel: 4,  //设置进程的进程数
-            // // extractComments: true,  //删除我们在js代码中写的注释
-            // })
+            new TerserPlugin({
+                parallel: 4,  //启动多线程 并设置进程的数量
+                
+            })
         ],
         
     },
+    plugins:[
+        new ModuleConcatenationPlugin()
+    ]
 })

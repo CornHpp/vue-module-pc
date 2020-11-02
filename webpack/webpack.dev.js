@@ -5,14 +5,26 @@ const common = require('./webpack.common.js')
 const webpack  = require('webpack')
 
 
-// ---------------------开启多进程的压缩js代码
-const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin');
 
 module.exports=merge(common,{
     mode:'development',  //生产环境
+    watch:true,  //开启监听，热更新
+
+    watchOptions:{
+      ignored:/node_modules/,  //忽略node_modules
+      aggregateTimeout:300,  //改变代码后，300毫米后再去监听，节流功能
+      poll:1000,  //每个1s查看，文件是否有改变
+    },
+
     devServer:{  //开启本地服务器
         contentBase:'./dist',
-        hot:true
+        compress:true,  //开启gzip压缩功能
+        hot:true,
+        open:true,
+        proxy:{
+          //开启跨域，将本地的/api代理到3000端口号
+          '/api':'http://localhost:3000'
+        }
     },
     module:{
         rules:[
@@ -40,30 +52,6 @@ module.exports=merge(common,{
     plugins:[
         new webpack.NamedChunksPlugin(),  //给打包的模块，命名的
         new webpack.HotModuleReplacementPlugin(), //启动热更新 
-        
-         // 使用 ParallelUglifyPlugin 并行压缩输出JS代码
-    new ParallelUglifyPlugin({
-        // 传递给 UglifyJS的参数如下：
-        uglifyJS: {
-          output: {
-             //是否输出可读性较强的代码，即会保留空格和制表符，默认为输出，为了达到更好的压缩效果，可以设置为false
-            beautify: false,
-             //是否保留代码中的注释，默认为保留，为了达到更好的压缩效果，可以设置为false
-            comments: false
-          },
-          compress: {
-             //是否在UglifyJS删除没有用到的代码时输出警告信息，默认为输出，可以设置为false关闭这些作用不大的警告
-            warnings: false,
-            // 是否删除代码中所有的console语句，默认为不删除，开启后，会删除所有的console语句
-            drop_console: true,
-             //是否内嵌虽然已经定义了，但是只用到一次的变量，比如将 var x = 1; y = x, 转换成 y = 5, 默认为不转换，为了达到更好的压缩效果，可以设置为false
-            collapse_vars: true,
-             //是否提取出现了多次但是没有定义成变量去引用的静态值，比如将 x = 'xxx'; y = 'xxx'  转换成
-             //var a = 'xxxx'; x = a; y = a; 默认为不转换，为了达到更好的压缩效果，可以设置为false
-            reduce_vars: true
-          }
-        }
-      }),
- 
+       
     ] 
 })

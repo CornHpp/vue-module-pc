@@ -1,4 +1,5 @@
 //webpack的公用配置
+const Webpack  = require('webpack')
 const path = require('path')
 //每次重新打包后，清楚dist的目录
 const {CleanWebpackPlugin} = require('clean-webpack-plugin');
@@ -14,6 +15,8 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 // ----------------------------------------------------------------------------------分割线
 // 下面plguins可选项的
 
+//DllReferencePlugin这个主要是将生成的vendor.dll.js文件加上hash值插入到页面中。
+const DllReferencePlugin = require('webpack/lib/DllReferencePlugin')
 
 module.exports={
     //打包入口
@@ -24,9 +27,11 @@ module.exports={
     output:{
         filename:'[name].js',   //打包的文件名
         path:path.resolve(__dirname,'dist'),  //打包的文件路径
+        // publicPath:'http://cdn.abc.com', 修改静态文件的url前缀，经常用于上线模式
     },  
     //公用的module
     module:{
+        noParse:/jquery/,//不去解析jquery中的依赖库 专门用来不去解析一些库用的。
         rules:[
             {
                 test:/\.css$/,  //解析.css文件
@@ -60,6 +65,7 @@ module.exports={
                         }
                     }
                 ],
+                exclude:/node_modules/,
                 include:[   //只解析src下面的js文件，减少打node_modules
                     path.resolve(__dirname,'src')
                 ]
@@ -76,11 +82,15 @@ module.exports={
         }),
         new VueLoaderPlugin(),//vue的plugin
         new MiniCssExtractPlugin(),  //从js的代码中分离css代码出来
-        
-        // --------------------我是分割线（可选的)
-     
-    ],
 
+          ////这个主要是将Dllplugin生成的vendor.dll.js文件加上hash值插入到页面中。
+          new DllReferencePlugin({
+            manifest:require(path.join(__dirname,'../static/js/vendor-manifest.json'))
+          }),
+
+          //自动忽略哪个包，和上面的noParse类似的功能。
+          new Webpack.IgnorePlugin(/\.\/locale/,/moment/)
+    ],
     resolve:{
         alias:{
             vue$:"vue/dist/vue.esm.js",  //必须要写，用来解析vue文件的
@@ -88,9 +98,12 @@ module.exports={
         }
     },
     devtool:"cheap-inline-source-map", //打开可以让我知道，我们哪个地方代码写错了
+
     devServer:{  //配置 webpack的服务器webpack-dev-server功能
         contentBase:'./dist',  //打开是哪个文件夹下的index.html
-        open:false,  //设置是否自动打开浏览器
-        hot:true,  //设置热更新
-    }
+
+    },
+
+   
+
 }
