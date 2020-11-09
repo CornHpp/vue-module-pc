@@ -6,6 +6,9 @@ const webpack  = require('webpack')
 // 压缩js
 const TerserPlugin = require('terser-webpack-plugin');
 
+//可视化打包结果优化
+const BundleAnalyzer = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+
 //开启Scope Hosting 作用：把所有的函数放到一个作用域里面，在上线模式使用
 const ModuleConcatenationPlugin = require('webpack/lib/optimize/ModuleConcatenationPlugin')
 
@@ -48,13 +51,22 @@ module.exports=merge(common,{
         minimize: true,
         minimizer: [
             new TerserPlugin({
+                cache:true,  //使用缓存，加快我们构建速度
                 parallel: 4,  //启动多线程 并设置进程的数量
-                
+                terserOptions:{
+                    compress:{
+                        unused:true,  //剔除没有用的代码
+                        drop_debugger:true,  //删除项目中的debug
+                        drop_console:true,  //删除项目中的console
+                        dead_code:true,  //也是移除无用代码
+                    }
+                }
             })
         ],
         
     },
     plugins:[
-        new ModuleConcatenationPlugin()
+        new ModuleConcatenationPlugin(),
+        new BundleAnalyzer()
     ]
 })

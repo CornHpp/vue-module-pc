@@ -38,7 +38,7 @@ module.exports=merge(common,{
                     只有项目超级大，才需要多进程打包
                   */
                   {
-                    loader: 'thread-loader',
+                    loader: 'thread-loader',   //重点
                     options: {
                       workers: 2 // 进程2个
                     }
