@@ -84,10 +84,10 @@ module.exports={
         new VueLoaderPlugin(),//vue的plugin
         new MiniCssExtractPlugin(),  //从js的代码中分离css代码出来
 
-          ////这个主要是将Dllplugin生成的vendor.dll.js文件加上hash值插入到页面中。
-          new DllReferencePlugin({
-            manifest: require('./dll/vendor-manifest.json')
-          }),
+        //   ////这个主要是将Dllplugin生成的vendor.dll.js文件加上hash值插入到页面中。
+        //   new DllReferencePlugin({
+        //     manifest: require('./dll/vendor-manifest.json')
+        //   }),
 
           //自动忽略哪个包，和上面的noParse类似的功能。
           new Webpack.IgnorePlugin(/\.\/locale/,/moment/)
@@ -96,7 +96,8 @@ module.exports={
         alias:{
             vue$:"vue/dist/vue.esm.js",  //必须要写，用来解析vue文件的
             "@":'src'
-        }
+        },
+        extensions:['.wasm','.mjs','.js','.vue','jsx',],   //重点，如果遇到，引入的文件没用后缀名的文件，就遍历这个数组，看看能不能找到相匹配的文件，
     },
     devtool:"cheap-inline-source-map", //打开可以让我知道，我们哪个地方代码写错了
 
